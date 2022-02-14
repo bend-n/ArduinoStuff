@@ -7,22 +7,31 @@ void setup() {
   }
 }
 
-void fade(int pin) { 
+void fade(int pin, int length = 30, int hold = 1000, int times = 1) { 
   int brightness = 0;
   int fadeAmount = 7;
+  int done_times = 0;
   bool up = true;
   while (true) {
     analogWrite(pin, brightness);
 
     brightness = brightness + fadeAmount;
     // wait
-    delay(30);
+    delay(length);
     if (brightness <= 1 || brightness >= 252) {
       fadeAmount = -fadeAmount;
       up = !up;
-      if (up) {
-        analogWrite(pin, 0); // turn off the light
-        break;
+      if (up) { //reached bottom, going back up again.
+        done_times++;
+        // Serial.println("going back up?");
+        if (done_times == times) {
+          analogWrite(pin, 0); // turn off the light
+          break;
+        }
+      else { // reached peak, going down
+        // Serial.println("Delaying.");
+        delay(hold);
+      }
       }
     }
   }
@@ -30,10 +39,13 @@ void fade(int pin) {
 
 void loop() {
   for(int i = 0; i <= 2; i++) {
-    // Serial.print(i);
-    // Serial.print(" | ");
+    int delay = 30;
+    switch (i) {
+      case 0 : fade(pins[i], 50, 2000); break;
+      case 1 : fade(pins[i], 5, 200, 5); break;
+      case 2 : fade(pins[i], 60, 2000); break;
+    }
+    // Serial.print("Fading pin ");
     // Serial.println(pins[i]);
-    // analogWrite(pins[i], 254);
-    fade(pins[i]);
   }
 }
