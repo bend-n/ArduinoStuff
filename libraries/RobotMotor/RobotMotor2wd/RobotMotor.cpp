@@ -66,6 +66,7 @@ void motorStop(int motor)
 {
   // todo set speed to 0 ???
   motors[motor].run(RELEASE);      // stopped
+  motorSetSpeed(0) // todo done!?
 }
 
 void motorBrake(int motor)
