@@ -1,4 +1,3 @@
-
 #include <AFMotor.h>  // adafruit motor shield library
 #include "RobotMotor.h"    // 2wd or 4wd motor library
 
@@ -37,27 +36,24 @@ void setup() {
   Serial.begin(9600);
   Serial.println("initialized");
   moveBegin();
-  moveSetSpeed(MIN_SPEED + 40);
+  moveSetSpeed(MIN_SPEED + 5); // 5% of max speed
 }
 
 void loop() {
   if ( Serial.available() >= TOTAL_BYTES) {
-    // sample format: Hw0a0s1d0
-    if (Serial.read() == HEADER) {
-      for(int i = 0; i <= number_of_keys * 2; i++) {
-        char tag = Serial.read(); // read the first tag
-        if (tags[i / 2] == tag){ // perhaps works
-          char key = Serial.read();
-          Serial.print(tag); Serial.print(": "); Serial.println(key); // debug
-          processCommand(tags[i], key); 
-        }
-        else {
-          Serial.write(tag);
-          Serial.println( ": unknown tag");
-        }
+    // sample format: Hw0 or Hd1, etc.
+    if (Serial.read() == HEADER) { // read header, next letter is a tag
+      char tag = Serial.read(); // read the first tag
+      if (is_tag_valid(tag) == true) {
+        char pressed = Serial.read(); // read the number
+        Serial.print(tag); Serial.print(": "); Serial.println(pressed); // debug
+        processCommand(tag, pressed); // process the command
+      }
+      else {
+        Serial.write(tag);
+        Serial.println( ": unknown tag");
       }
     }
-  }
     else {
       Serial.print("missing header: ");
       Serial.println(HEADER);
@@ -65,10 +61,20 @@ void loop() {
   }
 }
 
-void changeCmdState(int newState)
-{
-  if(newState != commandState)
-  {
+
+bool is_tag_valid(char tag){
+  for(int i = 0; i < number_of_keys; i++){
+    if(tag == tags[i]){
+      return true;
+    }
+  }
+  // else
+  return false;
+}
+
+
+void changeCmdState(int newState) {
+  if(newState != commandState) {
     // Serial.print("Changing Cmd state from "); Serial.print( states[commandState]); // dont need this logged
     // Serial.print(" to "); Serial.println(states[newState]);
     commandState = newState;
@@ -76,10 +82,7 @@ void changeCmdState(int newState)
 }
 
 
-void processCommand(int cmd, int pressed)
-{
-  moveStop();
-  changeCmdState(MOV_STOP);
+void processCommand(int cmd, int pressed) {
   // byte speed;
   //Serial.write(cmd); // uncomment to echo
   
