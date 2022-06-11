@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "arduino/arduino.ino",
+    "port": "/dev/ttyACM0",
+    "output": "/tmp/arduinologs"
+}
