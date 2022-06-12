@@ -1,6 +1,5 @@
 #define HEADER 'H'
-
-#define TOTAL_BYTES 3 // hmmm
+#define TOTAL_BYTES 3
 
 const int MOVE_FORWARD[2] = {0, 2}; // 2 == -1 == up
 const int MOVE_LEFT[2] = {2, 0};    // move left
@@ -12,6 +11,7 @@ void setup() {
   Serial.begin(9600);
   Serial.println("initialized");
   begin();
+  processCommand(0, 2);
 }
 
 void loop() {
@@ -23,31 +23,15 @@ void loop() {
       int x = (tmp - '0');
       tmp = Serial.read();
       int y = (tmp - '0');
-      Serial.println(y, BIN);
-      Serial.println(x, BIN);
-      Serial.println("this is what I recived boss");
-      if (is_tag_valid(x, y)) {
-        processCommand(x, y); // process the command
-      } else {
-        Serial.print(x, BIN);
-        Serial.print(y, BIN);
-        Serial.println(": unknown tag");
-      }
-    } else {
-      Serial.print("unknown header: ");
-      Serial.println(header);
+      processCommand(x, y); // process the command
     }
   }
-}
-
-bool is_tag_valid(const int x, const int y) {
-  return x > 0 && x < 3 && y > 0 && y < 3;
 }
 
 // @param cmd the thing that tells it what to do, usually a vector(01, 22).
 void processCommand(const int x, const int y) {
   const int cmd[] = {x, y};
-  if (cmd == MOVE_FORWARD) {
+  if (arrayCmp(cmd, MOVE_FORWARD)) {
     forward();
   } else if (arrayCmp(cmd, MOVE_STOP)) {
     stop();
@@ -58,12 +42,11 @@ void processCommand(const int x, const int y) {
   } else if (arrayCmp(cmd, MOVE_BACK)) {
     backward();
   } else {
-    Serial.print('[');
+    Serial.print("( ");
     Serial.print(x);
-    Serial.print(cmd[0]);
-    Serial.print(cmd[1]);
+    Serial.print(", ");
     Serial.print(y);
-    Serial.println("] Ignored");
+    Serial.println(" ) Ignored");
   }
 }
 
