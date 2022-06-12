@@ -6,8 +6,6 @@
 #define BrakeMotorB 8
 #define MotorBSpeed 11
 
-#define SPEED 255 // speed of motors
-
 void begin() {
   // Setup Channel A
   pinMode(MotorA, OUTPUT);
@@ -18,38 +16,29 @@ void begin() {
   pinMode(BrakeMotorB, OUTPUT);
 }
 
+// @param direction LOW is backwards, HIGH is forward
+// @param speed 0-255
+void motor(int motorpin, int motorbrake, int motorspeed, int direction,
+           int speed) {
+  digitalWrite(motorpin, direction);
+  digitalWrite(motorbrake, LOW);  // brake off
+  analogWrite(motorspeed, speed); // speed up
+}
+
 void motorAForward(int speed) {
-  digitalWrite(MotorA, HIGH);      // forward
-  digitalWrite(BrakeMotorA, LOW);  // brake off
-  analogWrite(MotorASpeed, speed); // speed of motor
+  motor(MotorA, BrakeMotorA, MotorASpeed, HIGH, speed);
 }
 
 void motorBForward(int speed) {
-  digitalWrite(MotorB, HIGH);      // forward
-  digitalWrite(BrakeMotorB, LOW);  // brake off
-  analogWrite(MotorBSpeed, speed); // speed of motor
+  motor(MotorB, BrakeMotorB, MotorBSpeed, HIGH, speed);
 }
 
 void motorBBackward(int speed) {
-  digitalWrite(MotorB, LOW);       // backwards
-  digitalWrite(BrakeMotorB, LOW);  // brake off
-  analogWrite(MotorBSpeed, speed); // speed of motor
+  motor(MotorB, BrakeMotorB, MotorBSpeed, LOW, speed);
 }
 
 void motorABackward(int speed) {
-  digitalWrite(MotorA, LOW);       // backwards
-  digitalWrite(BrakeMotorA, LOW);  // brake off
-  analogWrite(MotorASpeed, speed); // speed of motor
-}
-
-void forward() {
-  motorAForward(SPEED);
-  motorBForward(SPEED);
-}
-
-void backward() {
-  motorABackward(SPEED);
-  motorBBackward(SPEED);
+  motor(MotorA, BrakeMotorA, MotorASpeed, LOW, speed);
 }
 
 void brakeMotorA() {
@@ -65,14 +54,4 @@ void brakeMotorB() {
 void stop() {
   brakeMotorA();
   brakeMotorB();
-}
-
-void left() {
-  brakeMotorA();
-  motorBForward(SPEED);
-}
-
-void right() {
-  brakeMotorB();
-  motorAForward(SPEED);
 }

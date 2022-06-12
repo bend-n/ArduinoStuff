@@ -18,6 +18,7 @@
             "includePath": [
                 "/home/bendn/.arduino15/packages/arduino/hardware/avr/1.8.4/cores/arduino",
                 "/home/bendn/.arduino15/packages/arduino/hardware/avr/1.8.4/variants/standard",
+                "/home/bendn/Arduino/libraries/Servo/src",
                 "/home/bendn/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/lib/gcc/avr/7.3.0/include",
                 "/home/bendn/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/lib/gcc/avr/7.3.0/include-fixed",
                 "/home/bendn/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/avr/include"

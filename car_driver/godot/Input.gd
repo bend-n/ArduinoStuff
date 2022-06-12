@@ -1,25 +1,36 @@
 extends Node
 
-var input : Vector2
+var input := Vector2.ZERO
 
-func prepare(v: Vector2) -> Vector2:
-	v = v.normalized()
-	if v.x < 0:
-		v.x = 1 - v.x
-	if v.y < 0:
-		v.y = 1 - v.y
-	v=v.round()
-	return v
+var fast := false
+
+onready var lb = $Label
 
 
 func _physics_process(_delta):
 	var inp := get_input()
-	if input != inp:
-		print(inp)
+	if inp != input:
 		input = inp
-		SerialIO.send("H%s%s" % [inp.x, inp.y])
+		lb.text = str(input)
+		SerialIO.write("H%s,%s" % [input.x, input.y])
 
-func get_input()->Vector2:
-	var x := Input.get_axis("ui_left", "ui_right")
-	var y := Input.get_axis("ui_up", "ui_down")
-	return prepare(Vector2(x, y))
+
+func _ready():
+	yield(get_tree(), "idle_frame")
+	SerialIO.write("H0,0")  #stop
+	lb.text = str(input)
+
+
+func get_input() -> Vector2:
+	if Input.is_action_just_pressed("sped"):
+		fast = !fast
+	var x := Input.get_action_strength("leftpaddle")
+	var y := Input.get_action_strength("rightpaddle")
+	var multiplier := 100 if fast else 50
+	var v := Vector2(x, y) * multiplier
+	# if button is pressed, reverse, if no paddle input, move slow
+	if Input.is_action_pressed("lb"):
+		v.x = -v.x if v.x else -multiplier / 4.0
+	if Input.is_action_pressed("rb"):
+		v.y = -v.y if v.y else -multiplier / 4.0
+	return (v).round()
