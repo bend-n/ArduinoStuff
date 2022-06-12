@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "test_motor.ino",
+    "port": "/dev/ttyACM0"
+}
