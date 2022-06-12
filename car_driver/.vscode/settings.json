@@ -1,4 +1,5 @@
 {
   "C_Cpp.errorSquiggles": "Disabled",
-  "arduino.defaultBaudRate": 9600
+  "arduino.defaultBaudRate": 9600,
+  "arduino.clearOutputOnBuild": true
 }

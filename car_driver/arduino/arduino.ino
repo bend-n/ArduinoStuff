@@ -1,5 +1,4 @@
 #define HEADER 'H'
-#define TOTAL_BYTES 3
 
 const int MOVE_FORWARD[2] = {0, 2}; // 2 == -1 == up
 const int MOVE_LEFT[2] = {2, 0};    // move left
@@ -11,45 +10,50 @@ void setup() {
   Serial.begin(9600);
   Serial.println("initialized");
   begin();
-  processCommand(0, 2);
 }
 
 void loop() {
-  if (Serial.available() >= TOTAL_BYTES) {
-    // sample format: H11 or H02, etc.
-    char header = Serial.read();
-    if (header == HEADER) { // done reading header, next number is a tag
-      char tmp = Serial.read();
-      int x = (tmp - '0');
-      tmp = Serial.read();
-      int y = (tmp - '0');
-      processCommand(x, y); // process the command
+  if (Serial.available() > 0) {
+    String string = Serial.readString();
+    string.trim();
+    char header = string[0];
+    if (header == HEADER) {
+      int delimiter = string.indexOf(',');
+      int x = string.substring(1, delimiter).toInt();
+      int y = string.substring(delimiter + 1).toInt();
+      processCommand(x, y);
+    } else {
+      Serial.println("wrong header: " + String(header));
     }
   }
 }
 
+#define DEADZONE 10
 // @param cmd the thing that tells it what to do, usually a vector(01, 22).
 void processCommand(const int x, const int y) {
-  const int cmd[] = {x, y};
-  if (arrayCmp(cmd, MOVE_FORWARD)) {
-    forward();
-  } else if (arrayCmp(cmd, MOVE_STOP)) {
-    stop();
-  } else if (arrayCmp(cmd, MOVE_LEFT)) {
-    left();
-  } else if (arrayCmp(cmd, MOVE_RIGHT)) {
-    right();
-  } else if (arrayCmp(cmd, MOVE_BACK)) {
-    backward();
-  } else {
-    Serial.print("( ");
-    Serial.print(x);
-    Serial.print(", ");
-    Serial.print(y);
-    Serial.println(" ) Ignored");
+  if (x > 200 || x < 0 || y > 200 || y < 0) {
+    Serial.println("invalid command");
   }
-}
-
-bool arrayCmp(const int array[], const int array2[]) {
-  return array[0] == array2[0] && array[1] == array2[1];
+  if (x < DEADZONE) {
+    // apply brakes to motora
+    brakeMotorA();
+  } else if (x > 100) {
+    motorABackward((x - 100) + 155);
+  } else {
+    // apply speed to motora
+    motorAForward(x + 155);
+  }
+  if (y < DEADZONE) {
+    // apply brakes to motorb
+    brakeMotorB();
+  } else if (y > 100) {
+    motorBBackward((y - 100) + 155);
+  } else {
+    // apply speed to motorb
+    motorBForward(y + 155);
+  }
+  Serial.print("x: ");
+  Serial.print(String(x));
+  Serial.print(" y: ");
+  Serial.println(String(y));
 }
