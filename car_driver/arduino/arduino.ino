@@ -27,7 +27,7 @@ void loop() {
   }
 }
 
-#define DEADZONE 10
+#define DEADZONE 1
 // @param cmd the thing that tells it what to do, usually a vector(01, 22).
 void processCommand(const int x, const int y) {
   if (x > 100 || x < -100 || y > 100 || y < -100) {
