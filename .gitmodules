@@ -1,0 +1,4 @@
+[submodule "car_driver/godot/godot-cpp"]
+path = car_driver/godot/godot-cpp
+url = https://github.com/godotengine/godot-cpp
+branch = 3.x
