@@ -8,6 +8,7 @@ namespace godot {
 class GDSerial : public Reference {
   GODOT_CLASS(GDSerial, Reference)
 
+private:
   int serial_port;
 
 public:

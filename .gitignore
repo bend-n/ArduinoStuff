@@ -1,3 +1,5 @@
 libraries/
 .vscode/
 car_driver/godot/car_driver/.import/
+*.os
+*.dblite

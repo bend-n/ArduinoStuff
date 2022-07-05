@@ -3,6 +3,8 @@ extends Node
 const Serial = preload("res://bin/gdserial.gdns")
 var serial: Serial
 
+signal recieved
+
 const baud_rate := 9600
 const endline := "\n"
 
@@ -21,3 +23,9 @@ func create_serial():
 
 func _ready():
 	create_serial()
+
+func _process(delta):
+	if serial.get_available()>0:
+		var data = serial.read_string()
+		emit_signal("recieved", data)
+		print(data)
