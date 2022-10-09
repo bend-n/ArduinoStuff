@@ -1,0 +1,28 @@
+name: "export" # name of the workflow
+on: # when it is triggered
+  workflow_dispatch: # manually or
+  push: # on a push
+    branches:
+      - main # to this branch
+    paths: # with modifications to these files
+      - "**.gd" # all gdscript files
+      - "**.tscn" # scene files
+      - "**.import" # this means a png changed
+      - "**.tres" # godot resources
+      - "**.ttf" # fonts in godot3 dont have their own .import
+      - ".github/workflows/export.yml" # this workflow
+      - "export_presets.cfg" # the export template
+
+jobs: # the things to do
+  export: # a thing to do
+    uses: bend-n/godot-actions/.github/workflows/callable-export.yml@main
+    with: # variables
+      export-name: ${{ github.event.repository.name }} # the name of the zipfile
+      godot-version: 3.5 # the godot version
+      image: ghcr.io/bend-n/godot-2d:3.5 # the container to use
+      platforms: "linux" # space seperated list of platforms to build
+      project-root-path: "car_driver/godot/car_driver" # the directory that project.godot is in
+    secrets: # secrets
+      android-keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }} # not required
+      android-keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }} # not required
+      butler-api-key: ${{ secrets.BUTLER_CREDENTIALS }} # required for itch.io
