@@ -8,9 +8,10 @@
 class Error {
 public:
   Error(String err) {
-    Serial.println("err: " + err);
+    Serial.print(F("E: "));
+    Serial.println(err);
     OLED::clear();
-    OLED::println("err: " + err);
+    OLED::println("E: " + err);
     OLED::flush();
     blink_err_light();
   };
