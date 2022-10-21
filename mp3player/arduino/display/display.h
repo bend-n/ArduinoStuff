@@ -5,8 +5,8 @@
 #define SCREEN_HEIGHT 64
 
 #include "../math.h"
-#include "freeserif.h"
-#include "splash.h"
+#include "freeserif.hpp"
+#include "splash.hpp"
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
 namespace OLED {
