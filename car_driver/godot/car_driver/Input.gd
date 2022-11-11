@@ -1,36 +1,35 @@
 extends Node
 
-var input := Vector2.ZERO
+onready var lb := $Label
 
-var fast := false
-
-onready var lb = $Label
-
+var prev_input: PoolIntArray
 
 func _physics_process(_delta):
-	var inp := get_input()
-	if inp != input:
-		input = inp
+	var input := get_input()
+	write(input) # write it multiple times because packet loss (idk either but it happens)
+	if prev_input != input:
+		prev_input = input
+		print(input)
 		lb.text = str(input)
-		SerialIO.write("H%s,%s" % [input.x, input.y])
 
+func write(motors: PoolIntArray) -> void:
+	SerialIO.write("H%d,%d" % [motors[0], motors[1]])
 
-func _ready():
-	yield(get_tree(), "idle_frame")
-	SerialIO.write("H0,0")  #stop
-	lb.text = str(input)
+func get_input() -> PoolIntArray:
+	var force: float = Input.get_axis("decel", "accel")
+	var torque: float = Input.get_axis("ui_left", "ui_right")
+	var turn_sign := sign(torque)
+	var turn_amount := abs(torque)
+	var input: PoolIntArray = [mult(lerp(force, turn_sign, turn_amount)), mult(lerp(force, -turn_sign, turn_amount))]
+	if force < 0:
+		input.invert()
+	return input
 
+func mult(n: float) -> int:
+	return int(clamp(n * 100, -100, 100))
 
-func get_input() -> Vector2:
-	if Input.is_action_just_pressed("sped"):
-		fast = !fast
-	var x := Input.get_action_strength("leftpaddle")
-	var y := Input.get_action_strength("rightpaddle")
-	var multiplier := 100 if fast else 50
-	var v := Vector2(x, y) * multiplier
-	# if button is pressed, reverse, if no paddle input, move slow
-	if Input.is_action_pressed("lb"):
-		v.x = -v.x if v.x else -multiplier / 4.0
-	if Input.is_action_pressed("rb"):
-		v.y = -v.y if v.y else -multiplier / 4.0
-	return (v).round()
+func reset() -> void:
+	write([0, 0])
+
+func _exit_tree() -> void:
+	reset()

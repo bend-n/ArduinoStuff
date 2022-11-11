@@ -8,10 +8,10 @@ struct Motor {
   int brake_pin;
   int speed_pin;
 
-  inline void forward(int speed) {
+  inline void forward(int8_t speed) {
     motor_utils::set(pin, brake_pin, speed_pin, HIGH, speed);
   }
-  inline void backward(int speed) {
+  inline void backward(int8_t speed) {
     motor_utils::set(pin, brake_pin, speed_pin, LOW, speed);
   }
   inline void brake() { motor_utils::brake(brake_pin, speed_pin); }
@@ -21,7 +21,8 @@ struct Motor {
     pinMode(brake_pin, OUTPUT);
   }
 
-  Motor(const int _pin, const int _brake_pin, const int _speed_pin) {
+  Motor(const uint8_t _pin, const uint8_t _brake_pin,
+        const uint8_t _speed_pin) {
     pin = _pin;
     brake_pin = _brake_pin;
     speed_pin = _speed_pin;

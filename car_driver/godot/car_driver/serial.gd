@@ -24,8 +24,7 @@ func create_serial():
 func _ready():
 	create_serial()
 
-func _process(delta):
+func _process(_delta):
 	if serial.get_available()>0:
-		var data = serial.read_string()
+		var data: String = serial.read_string()
 		emit_signal("recieved", data)
-		print(data)
