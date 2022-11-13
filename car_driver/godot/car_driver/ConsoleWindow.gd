@@ -15,5 +15,5 @@ func _process(_delta := 0.0):
 func _on_Send_text_entered(new_text: String):
 	new_text = new_text.strip_edges().strip_escapes()
 	if new_text:
-		SerialIO.send(new_text)
+		SerialIO.write(new_text)
 	send.text = ""

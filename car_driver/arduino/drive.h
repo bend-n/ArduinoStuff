@@ -3,8 +3,7 @@
 
 #include "motor.h"
 
-Motor motor_b(13, 8, 11);
-Motor motor_a(12, 9, 3);
+Motor motor_a(12, 9, 3), motor_b(13, 8, 11);
 
 inline void begin() {
   motor_a.begin();

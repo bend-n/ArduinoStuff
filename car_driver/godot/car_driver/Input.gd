@@ -18,9 +18,8 @@ func write(motors: PoolIntArray) -> void:
 func get_input() -> PoolIntArray:
 	var force: float = Input.get_axis("decel", "accel")
 	var torque: float = Input.get_axis("ui_left", "ui_right")
-	var turn_sign := sign(torque)
-	var turn_amount := abs(torque)
-	var input: PoolIntArray = [mult(lerp(force, turn_sign, turn_amount)), mult(lerp(force, -turn_sign, turn_amount))]
+	var turn_amount := abs(torque) / 2.5
+	var input: PoolIntArray = [mult(lerp(force, torque, turn_amount)), mult(lerp(force, -torque, turn_amount))]
 	if force < 0:
 		input.invert()
 	return input

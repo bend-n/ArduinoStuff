@@ -3,9 +3,7 @@
 
 class Motor {
 private:
-  int pin;
-  int brake_pin;
-  int speed_pin;
+  uint8_t pin, brake_pin, speed_pin;
 
   // @param direction LOW is backwards, HIGH is forward
   // @param speed 0-255
@@ -39,11 +37,8 @@ public:
     pinMode(brake_pin, OUTPUT);
   }
 
-  Motor(const uint8_t _pin, const uint8_t _brake_pin,
-        const uint8_t _speed_pin) {
-    pin = _pin;
-    brake_pin = _brake_pin;
-    speed_pin = _speed_pin;
+  Motor(const uint8_t _pin, const uint8_t _brake_pin, const uint8_t _speed_pin) {
+    pin = _pin, brake_pin = _brake_pin, speed_pin = _speed_pin;
   }
 };
 #endif
