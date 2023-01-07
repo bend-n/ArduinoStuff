@@ -3,18 +3,20 @@
 // #include "Streaming.h"
 
 namespace Controller {
+/// vars
 unsigned int last_x_value = 1023 / 2;
-uint8_t last_button_states[] = {LOW, LOW};
+unsigned int last_accel_value = 0;
+unsigned int last_brake_value = LOW; // still digital
+
+/// pins
 #define STEER_X A0
-#define ACCEL 9
+#define ACCEL A1
 #define BRAKE 8
-constexpr uint8_t buttons[] = {ACCEL, BRAKE};
+
 #ifdef GAMEPAD_USE_BUTTONS
-#define A 0
-#define B 1
-constexpr uint8_t pad_map[] = {A, B};
+#define PAD_A 0
+#define PAD_B 1
 #endif
-constexpr uint8_t button_count = sizeof(buttons);
 
 #ifdef MODE_STEERING_WHEEL
 Joystick_ Gamepad(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_MULTI_AXIS, 0, 0, false, false, false, false, false,
@@ -30,57 +32,60 @@ Joystick_ Gamepad(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD, 2, 0, true,
 #endif
 
 void begin() {
-  for (int i = 0; i < button_count; i++)
-    pinMode(buttons[i], INPUT_PULLUP);
   pinMode(STEER_X, INPUT);
+  pinMode(ACCEL, INPUT);
+  pinMode(BRAKE, INPUT_PULLUP);
   Gamepad.begin();
 #ifdef MODE_STEERING_WHEEL
-  Gamepad.setAcceleratorRange(0, 1);
   Gamepad.setBrakeRange(0, 1);
   Gamepad.setSteering(last_x_value);
 #elif defined(MODE_GAMEPAD)
   Gamepad.setXAxis(last_x_value);
   Gamepad.setYAxis(1023 / 2);
 #ifdef GAMEPAD_USE_TRIGGERS
-  Gamepad.setRzAxisRange(0, 1);
   Gamepad.setZAxisRange(0, 1);
 #endif
 #endif
 }
 
-void send() {
-  for (int i = 0; i < button_count; i++) {
-    uint8_t state = digitalRead(buttons[i]) == LOW ? HIGH : LOW;
-    if (state != last_button_states[i]) {
+inline bool boolify(unsigned int analog) { return analog < (1023 / 2) ? 0 : 1; }
+
+void accel() {
+  unsigned int new_accel = analogRead(ACCEL);
+  if (new_accel != last_accel_value) {
+    last_accel_value = new_accel;
 #ifdef MODE_GAMEPAD
 #ifdef GAMEPAD_USE_BUTTONS
-      Gamepad.setButton(pad_map[i], state);
+    Gamepad.setButton(PAD_A, boolify(new_accel));
 #elif defined(GAMEPAD_USE_TRIGGERS)
-      switch (buttons[i]) {
-      case ACCEL:
-        Gamepad.setRzAxis(state);
-        break;
-      case BRAKE:
-        Gamepad.setZAxis(state);
-      }
+    Gamepad.setRzAxis(new_accel);
 #endif
 #elif defined(MODE_STEERING_WHEEL)
-      switch (buttons[i]) {
-      case ACCEL:
-        Gamepad.setAccelerator(state);
-        break;
-      case BRAKE:
-        Gamepad.setBrake(state);
-        break;
-      }
+    Gamepad.setAccelerator(new_accel);
 #endif
-      last_button_states[i] = state;
-    }
   }
+}
 
+/// @brief still a button
+void brake() {
+  unsigned int new_brake = digitalRead(BRAKE) == HIGH ? LOW : HIGH;
+  if (new_brake != last_brake_value) {
+    last_brake_value = new_brake;
+#ifdef MODE_GAMEPAD
+#ifdef GAMEPAD_USE_BUTTONS
+    Gamepad.setButton(PAD_B, new_brake);
+#elif defined(GAMEPAD_USE_TRIGGERS)
+    Gamepad.setZAxis(new_brake); // if this becomes pot, remember to change this
+#endif
+#elif defined(MODE_STEERING_WHEEL)
+    Gamepad.setBrake(new_brake);
+#endif
+  }
+}
+
+void x() {
   unsigned int new_x = analogRead(STEER_X);
-#define DEADZONE 1 // if the change is only by one unit, dont bother
-  if (new_x - last_x_value > DEADZONE || new_x - last_x_value < DEADZONE) {
+  if (new_x != last_x_value) {
     last_x_value = new_x;
 #ifdef MODE_GAMEPAD
     Gamepad.setXAxis(new_x);
@@ -89,4 +94,11 @@ void send() {
 #endif
   }
 }
+
+void send() {
+  accel();
+  brake();
+  x();
+}
+
 } // namespace Controller
