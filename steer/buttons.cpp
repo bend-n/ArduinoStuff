@@ -21,10 +21,10 @@ Joystick_ Gamepad(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_MULTI_AXIS, 0, 0, fa
                   false, false, false, true, true, true);
 #elif defined(MODE_GAMEPAD)
 #ifdef GAMEPAD_USE_TRIGGERS
-Joystick_ Gamepad(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD, 0, 0, true, false, true, false, false, true,
+Joystick_ Gamepad(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD, 0, 0, true, true, true, false, false, true,
                   false, false, false, false, false);
 #elif defined(GAMEPAD_USE_BUTTONS)
-Joystick_ Gamepad(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD, 2, 0, true, false, false, false, false, false,
+Joystick_ Gamepad(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD, 2, 0, true, true, false, false, false, false,
                   false, false, false, false, false);
 #endif
 #endif
@@ -40,6 +40,7 @@ void begin() {
   Gamepad.setSteering(last_x_value);
 #elif defined(MODE_GAMEPAD)
   Gamepad.setXAxis(last_x_value);
+  Gamepad.setYAxis(1023 / 2);
 #ifdef GAMEPAD_USE_TRIGGERS
   Gamepad.setRzAxisRange(0, 1);
   Gamepad.setZAxisRange(0, 1);
