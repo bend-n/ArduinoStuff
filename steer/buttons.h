@@ -4,8 +4,8 @@
 namespace Controller {
 // #define MODE_STEERING_WHEEL
 #define MODE_GAMEPAD
-// #define GAMEPAD_USE_TRIGGERS
-#define GAMEPAD_USE_BUTTONS
+#define GAMEPAD_USE_TRIGGERS
+// #define GAMEPAD_USE_BUTTONS
 
 /// @brief sets up the pins
 void begin();

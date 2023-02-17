@@ -4,3 +4,4 @@ car_driver/godot/car_driver/.import/
 *.os
 *.dblite
 tmp/
+tests/
